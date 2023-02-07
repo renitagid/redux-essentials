@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom'
 
 import { postUpdated } from './postsSlice'
 
+
 export const EditPostForm = ({ match }) => {
   const { postId } = match.params
 

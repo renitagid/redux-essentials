@@ -10,10 +10,11 @@ const reactionEmoji = {
   rocket: '🚀',
   eyes: '👀',
 }
-
+//Reaction Buttons is receiving the specific post as props from either SinglePostPage, or PostsList
 export const ReactionButtons = ({ post }) => {
   const dispatch = useDispatch()
 
+  // Object.entries returns an array from an object enumerable key-value pairs - an array of arrays
   const reactionButtons = Object.entries(reactionEmoji).map(([name, emoji]) => {
     return (
       <button
@@ -24,6 +25,7 @@ export const ReactionButtons = ({ post }) => {
           dispatch(reactionAdded({ postId: post.id, reaction: name }))
         }
       >
+        {/* Posts have a property called reactions, which is an object filled with key:value pairs. [name], tells it we want to display the value at the key of that specific name, which is the current number of those specific reactions */}
         {emoji} {post.reactions[name]}
       </button>
     )
