@@ -14,6 +14,7 @@ async function start() {
 
   ReactDOM.render(
     <React.StrictMode>
+      {/* Use the Provider component to wrap the entire app, to give all children elements access to the global state. Store is passed as props */}
       <Provider store={store}>
         <App />
       </Provider>

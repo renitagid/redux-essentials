@@ -6,9 +6,11 @@ import { PostAuthor } from './PostAuthor'
 import { TimeAgo } from './TimeAgo'
 import { ReactionButtons } from './ReactionButtons'
 
+// React Router will pass in a match object as a prop that contains the URL information we're looking for (sent when we set up the route in App.js)
 export const SinglePostPage = ({ match }) => {
   const { postId } = match.params
 
+  //The useSelector hook accesses global state from the store, specifically the posts, then finds one where the params match the post id
   const post = useSelector((state) =>
     state.posts.find((post) => post.id === postId)
   )

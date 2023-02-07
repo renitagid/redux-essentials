@@ -1,5 +1,5 @@
 :root {
-  --redux-color: #764abc;
+  --redux-color: #408598;
 }
 
 body {
@@ -41,9 +41,10 @@ nav a,
 nav a:active {
   font-weight: 700;
   padding: 0.25rem 1.5rem;
-  border-radius: 4px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
   color: white !important;
-  background: #481499;
+  background: #1d3b58;
 }
 
 nav a:first-of-type {
