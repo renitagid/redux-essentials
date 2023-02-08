@@ -7,7 +7,7 @@ import { postUpdated, selectPostById } from './postsSlice'
 
 export const EditPostForm = ({ match }) => {
   const { postId } = match.params
-// state is being imported from postSlice.js
+// the selector method is being imported from postSlice.js
   const post = useSelector(state => selectPostById(state, postId))
 
 
@@ -15,6 +15,8 @@ export const EditPostForm = ({ match }) => {
   const [content, setContent] = useState(post.content)
 
   const dispatch = useDispatch()
+
+  // the useHistory hook has a stack of all the urls the user has last visited and will be used to push updates to the correct post on line 28
   const history = useHistory()
 
   const onTitleChanged = (e) => setTitle(e.target.value)

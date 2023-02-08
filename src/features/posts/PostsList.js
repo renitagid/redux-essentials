@@ -7,6 +7,7 @@ import { TimeAgo } from './TimeAgo'
 import { ReactionButtons } from './ReactionButtons'
 import { selectAllPosts, fetchPosts } from './postsSlice'
 
+// 
 const PostExcerpt = ({ post }) => {
   return (
     <article className="post-excerpt">
