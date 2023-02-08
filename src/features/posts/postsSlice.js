@@ -1,5 +1,25 @@
-import { createSlice, nanoid, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, nanoid, createAsyncThunk, createSelector } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
+
+
+// omit slice logic
+
+export const selectAllPosts = state => state.posts.posts
+
+export const selectPostById = (state, postId) =>
+  state.posts.posts.find(post => post.id === postId)
+
+  //createSelector takes in two arguments
+    // first argument is an input selector
+    //second argument is an output selector
+  export const selectPostsByUser = createSelector(
+    //if there are more than one selectors, put it inside of an array
+    [selectAllPosts, (state, userId) => userId],
+    (posts, userId) => posts.filter(post => post.user === userId)
+  )
+
+
+
 
 //setting initial state to work with in slice
 //initial state is an array of posts containg 5 properties
@@ -123,8 +143,4 @@ export default postsSlice.reducer
 // We need the code below to change postSlice as an array of posts to
 //an object with the posts array nested inside
 //the state parameter is the root Redux state object
-// selectAllPosts is used to read a list of all the posts
-export const selectAllPosts = (state) => state.posts.posts
-//selectPostById is used to read a singular post by using its ID
-export const selectPostById = (state, postId) =>
-  state.posts.posts.find((post) => post.id === postId)
+
