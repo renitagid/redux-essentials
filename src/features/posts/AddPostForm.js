@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-
-import { postAdded } from './postsSlice'
+import { addNewPost } from './postsSlice'
 
 // Question: is this essentially the same as just writing const AddPostForm and then export default AddPostForm at the bottom?
 export const AddPostForm = () => {
@@ -9,6 +8,7 @@ export const AddPostForm = () => {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [userId, setUserId] = useState('')
+  const [addRequestStatus, setAddRequestStatus] = useState('idle')
   // the useDispatch hook gives us the store's dispatch method as its result - this is how we dispatch actions and send them to the reducer
   const dispatch = useDispatch()
 
@@ -19,17 +19,28 @@ export const AddPostForm = () => {
   const onContentChanged = (e) => setContent(e.target.value)
   const onAuthorChanged = (e) => setUserId(e.target.value)
 
-  //   if the user has entered a title and content, the dispatch method will be run with an argument of the specific reducer (postAdded), which in turn has an argument of the title, content and user id. Then it updates the local state for the title and content fields.
-  const onSavePostClicked = () => {
-    if (title && content) {
-      dispatch(postAdded(title, content, userId))
-      setTitle('')
-      setContent('')
+  // this function checks if a title, content, and userId are present and is used to enable/disable the button
+  const canSave =
+    [title, content, userId].every(Boolean) && addRequestStatus === 'idle'
+  
+  //   if all conditions in canSave are met, "try" allows you to define a block of code to be tested for errors while it is being executed - here it will run the dispatch for reducer addNewPost and then .unwrap() returns a new Promise that either has the actual action.payload value from a fulfilled action, or throws an error if it's the rejected action
+  const onSavePostClicked = async () => {
+    if (canSave) {
+      try {
+        setAddRequestStatus('pending')
+        await dispatch(addNewPost({ title, content, user: userId })).unwrap()
+        setTitle('')
+        setContent('')
+        setUserId('')
+      } catch (err) {
+        console.error('Failed to save the post: ', err)
+      } finally {
+        setAddRequestStatus('idle')
+      }
     }
   }
 
-  // this function checks if a title, content, and userId are present and is used to enable/disable the button
-  const canSave = Boolean(title) && Boolean(content) && Boolean(userId)
+  
 
   //   logic for a dropdown where you can assign a user to the post (rendered below)
   const usersOptions = users.map((user) => (

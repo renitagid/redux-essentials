@@ -2,20 +2,21 @@ import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
 
-import { postUpdated } from './postsSlice'
+import { postUpdated, selectPostById } from './postsSlice'
 
 
 export const EditPostForm = ({ match }) => {
   const { postId } = match.params
+// the selector method is being imported from postSlice.js
+  const post = useSelector(state => selectPostById(state, postId))
 
-  const post = useSelector((state) =>
-    state.posts.find((post) => post.id === postId)
-  )
 
   const [title, setTitle] = useState(post.title)
   const [content, setContent] = useState(post.content)
 
   const dispatch = useDispatch()
+
+  // the useHistory hook has a stack of all the urls the user has last visited and will be used to push updates to the correct post on line 28
   const history = useHistory()
 
   const onTitleChanged = (e) => setTitle(e.target.value)
