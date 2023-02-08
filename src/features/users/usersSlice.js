@@ -20,7 +20,12 @@ const usersSlice = createSlice({
       // this return replaces the existing state with whatever is returned
       return action.payload
     })
-  }
+  },
 })
 
 export default usersSlice.reducer
+// selectAllUsers brings in the state of users
+export const selectAllUsers = (state) => state.users
+
+export const selectUserById = (state, userId) =>
+  state.users.find((user) => user.id === userId)
