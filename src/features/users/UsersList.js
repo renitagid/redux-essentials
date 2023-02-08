@@ -5,11 +5,11 @@ import { selectAllUsers } from './usersSlice'
 
 // Creates a list of users
 export const UsersList = () => {
-    // selectAllUsers is imported from usersSlice.js
+  // selectAllUsers is imported from usersSlice.js
   const users = useSelector(selectAllUsers)
 
   //renderedUsers maps through all the users in order to render each user as a link
-  const renderedUsers = users.map(user => (
+  const renderedUsers = users.map((user) => (
     <li key={user.id}>
       <Link to={`/users/${user.id}`}>{user.name}</Link>
     </li>

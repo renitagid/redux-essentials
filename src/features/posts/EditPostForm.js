@@ -4,12 +4,10 @@ import { useHistory } from 'react-router-dom'
 
 import { postUpdated, selectPostById } from './postsSlice'
 
-
 export const EditPostForm = ({ match }) => {
   const { postId } = match.params
-// the selector method is being imported from postSlice.js
-  const post = useSelector(state => selectPostById(state, postId))
-
+  // the selector method is being imported from postSlice.js
+  const post = useSelector((state) => selectPostById(state, postId))
 
   const [title, setTitle] = useState(post.title)
   const [content, setContent] = useState(post.content)

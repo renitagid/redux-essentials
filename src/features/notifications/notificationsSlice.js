@@ -15,7 +15,7 @@ export const fetchNotifications = createAsyncThunk(
 
     //Here is where we make the API call
     const response = await client.get(
-        // 'Since' will only bring us the notifications at the specified time from latestTimestamp
+      // 'Since' will only bring us the notifications at the specified time from latestTimestamp
       `/fakeApi/notifications?since=${latestTimestamp}`
     )
     return response.data
@@ -28,22 +28,22 @@ const notificationsSlice = createSlice({
   reducers: {
     //reducer to ensure all notifications are read
     allNotificationsRead(state, action) {
-        state.forEach(notification => {
-          notification.read = true
-        })
-      }
+      state.forEach((notification) => {
+        notification.read = true
+      })
+    },
   },
   extraReducers(builder) {
     builder.addCase(fetchNotifications.fulfilled, (state, action) => {
       state.push(...action.payload)
-      state.forEach(notification => {
+      state.forEach((notification) => {
         // Any notifications we've read are no longer new
         notification.isNew = !notification.read
       })
       // Sort with newest first
       state.sort((a, b) => b.date.localeCompare(a.date))
     })
-  }
+  },
 })
 
 //exporting reducer allNotificationsRead
@@ -51,4 +51,4 @@ export const { allNotificationsRead } = notificationsSlice.actions
 
 export default notificationsSlice.reducer
 
-export const selectAllNotifications = state => state.notifications
+export const selectAllNotifications = (state) => state.notifications

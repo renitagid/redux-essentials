@@ -7,7 +7,7 @@ import { TimeAgo } from './TimeAgo'
 import { ReactionButtons } from './ReactionButtons'
 import { selectAllPosts, fetchPosts } from './postsSlice'
 
-// 
+//
 const PostExcerpt = ({ post }) => {
   return (
     <article className="post-excerpt">
@@ -30,7 +30,7 @@ export const PostsList = () => {
   const dispatch = useDispatch()
   // selectAllPosts is imported from postSlice and is bringing root Redux State
   const posts = useSelector(selectAllPosts)
-  const error = useSelector(state => state.posts.error)
+  const error = useSelector((state) => state.posts.error)
   // postStatus is using the useSelector to access the state of posts for the status of the fetch request
   const postStatus = useSelector((state) => state.posts.status)
   // useEffect is a hook that is going to run on the first render, if that status is idle, then it will fetchPosts.
@@ -51,7 +51,7 @@ export const PostsList = () => {
       .slice()
       .sort((a, b) => b.date.localeCompare(a.date))
 
-    content = orderedPosts.map(post => (
+    content = orderedPosts.map((post) => (
       <PostExcerpt key={post.id} post={post} />
     ))
   } else if (postStatus === 'failed') {

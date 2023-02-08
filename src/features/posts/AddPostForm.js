@@ -22,7 +22,7 @@ export const AddPostForm = () => {
   // this function checks if a title, content, and userId are present and is used to enable/disable the button
   const canSave =
     [title, content, userId].every(Boolean) && addRequestStatus === 'idle'
-  
+
   //   if all conditions in canSave are met, "try" allows you to define a block of code to be tested for errors while it is being executed - here it will run the dispatch for reducer addNewPost and then .unwrap() returns a new Promise that either has the actual action.payload value from a fulfilled action, or throws an error if it's the rejected action
   const onSavePostClicked = async () => {
     if (canSave) {
@@ -39,8 +39,6 @@ export const AddPostForm = () => {
       }
     }
   }
-
-  
 
   //   logic for a dropdown where you can assign a user to the post (rendered below)
   const usersOptions = users.map((user) => (

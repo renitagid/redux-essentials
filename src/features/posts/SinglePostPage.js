@@ -13,7 +13,7 @@ export const SinglePostPage = ({ match }) => {
 
   //The useSelector hook accesses global state from the store, specifically the posts, then finds one where the params match the post id
   //The logic is coming from selectPostById which is in postSlice.js
-  const post = useSelector(state => selectPostById(state, postId))
+  const post = useSelector((state) => selectPostById(state, postId))
 
   if (!post) {
     return (
