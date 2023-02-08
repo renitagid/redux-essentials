@@ -45,6 +45,7 @@ nav a:active {
   border-top-right-radius: 8px;
   color: white !important;
   background: #1d3b58;
+  position: relative;
 }
 
 nav a:first-of-type {
@@ -71,22 +72,26 @@ nav a:hover {
 
 .navLinks a .badge {
   margin-left: 5px;
-  position: relative;
-  top: -3px;
+  position: absolute;
+  top: -5px;
 }
 
 .badge {
   display: inline-block;
-  padding: 0.25em 0.4em;
+  padding: 0.25em;
   font-size: 75%;
   font-weight: 700;
   line-height: 1;
   text-align: center;
   white-space: nowrap;
   vertical-align: baseline;
-  border-radius: 0.25rem;
-  color: #212529;
-  background-color: #f8f9fa;
+  border-radius: 1rem;
+  color: #ffffff;
+  background-color: #da3b27;
+  position:absolute;
+  right: -5px;
+  height: 20px;
+  width: 20px;
 }
 
 .navLinks :first-child {
