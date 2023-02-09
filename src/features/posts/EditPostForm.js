@@ -1,18 +1,17 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { useHistory } from 'react-router-dom'
 
-import { postUpdated, selectPostById } from './postsSlice'
+import { useHistory } from 'react-router-dom'
+import { useGetPostQuery, useEditPostMutation } from '../api/apiSlice'
 
 export const EditPostForm = ({ match }) => {
   const { postId } = match.params
   // the selector method is being imported from postSlice.js
-  const post = useSelector((state) => selectPostById(state, postId))
+  const { data: post } = useGetPostQuery(postId)
+  const [updatePost] = useEditPostMutation()
 
   const [title, setTitle] = useState(post.title)
   const [content, setContent] = useState(post.content)
 
-  const dispatch = useDispatch()
 
   // the useHistory hook has a stack of all the urls the user has last visited and will be used to push updates to the correct post on line 28
   const history = useHistory()
@@ -20,9 +19,9 @@ export const EditPostForm = ({ match }) => {
   const onTitleChanged = (e) => setTitle(e.target.value)
   const onContentChanged = (e) => setContent(e.target.value)
 
-  const onSavePostClicked = () => {
+  const onSavePostClicked = async () => {
     if (title && content) {
-      dispatch(postUpdated({ id: postId, title, content }))
+      await updatePost({ id: postId, title, content })
       history.push(`/posts/${postId}`)
     }
   }
