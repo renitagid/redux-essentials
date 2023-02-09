@@ -1,8 +1,13 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import {
+  createSlice,
+  createAsyncThunk,
+  createEntityAdapter,
+} from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
-// not keeping track of the status of fetching users in state yet, since this is not going to be displayed anywhere(?)
-const initialState = []
+const usersAdapter = createEntityAdapter()
+
+const initialState = usersAdapter.getInitialState()
 
 // createAsyncThunk is being passed a type and a payload
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
@@ -16,16 +21,11 @@ const usersSlice = createSlice({
   reducers: {},
   // In extraReducers, we are saying, when fetchUsers has been fulfilled, then return the payload (which is the users)
   extraReducers(builder) {
-    builder.addCase(fetchUsers.fulfilled, (state, action) => {
-      // this return replaces the existing state with whatever is returned
-      return action.payload
-    })
+    builder.addCase(fetchUsers.fulfilled, usersAdapter.setAll)
   },
 })
 
 export default usersSlice.reducer
 // selectAllUsers brings in the state of users
-export const selectAllUsers = (state) => state.users
-
-export const selectUserById = (state, userId) =>
-  state.users.find((user) => user.id === userId)
+export const { selectAll: selectAllUsers, selectById: selectUserById } =
+  usersAdapter.getSelectors((state) => state.users)

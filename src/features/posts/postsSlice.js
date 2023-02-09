@@ -3,31 +3,21 @@ import {
   nanoid,
   createAsyncThunk,
   createSelector,
+  createEntityAdapter,
 } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 
-export const selectAllPosts = (state) => state.posts.posts
+// new function postsAdapter using the createEntity that we are importing from toolkit - sorts posts by date
+// createEntityAdapter accepts an options object that may include a sortComparer function
+const postsAdapter = createEntityAdapter({
+  sortComparer: (a, b) => b.date.localeCompare(a.date),
+})
 
-export const selectPostById = (state, postId) =>
-  state.posts.posts.find((post) => post.id === postId)
-
-//createSelector takes in two arguments
-// first argument is an input selector
-//second argument is an output selector
-export const selectPostsByUser = createSelector(
-  //if there are more than one selectors, put it inside of an array. selectAllPosts is the first input selector function, defined above, it gives us posts. the second one we need is just the userId, but to format it as a selector function we need to input state and userId just to return userId. Given these, now we can execute the output selector function that filters all posts by userId.
-  [selectAllPosts, (state, userId) => userId],
-  (posts, userId) => posts.filter((post) => post.user === userId)
-)
-
-//setting initial state to work with in slice
-//initial state is an array of posts containg 5 properties
-//id,title,content,date,reactions
-const initialState = {
-  posts: [],
+// replaces initial state and lets our new function set up the initial state
+const initialState = postsAdapter.getInitialState({
   status: 'idle',
   error: null,
-}
+})
 
 //exporting the function fetchPosts to be used elsewhere in order to make an API call
 //the second argument to createAsyncThunk returns a Promise containing data or a rejected Promise with an error
@@ -86,11 +76,13 @@ const postsSlice = createSlice({
         }
       },
     },
-    //reducer to add raction to post
+    //reducer to add reaction to post
     reactionAdded(state, action) {
       // action.payload is deconstructed (because it is sent an entire object), then if a post exists patching the postId from the payload, then one reaction wll be added to the existing post's reaction number.
       const { postId, reaction } = action.payload
-      const existingPost = state.posts.find((post) => post.id === postId)
+
+      //   This replaces the logic to match the post id to the params - instead it can use the params to just look up the id from entities
+      const existingPost = state.entities[postId]
       if (existingPost) {
         existingPost.reactions[reaction]++
       }
@@ -98,7 +90,7 @@ const postsSlice = createSlice({
     //reducer to update existing post
     postUpdated(state, action) {
       const { id, title, content } = action.payload
-      const existingPost = state.posts.find((post) => post.id === id)
+      const existingPost = state.entities[id]
       if (existingPost) {
         existingPost.title = title
         existingPost.content = content
@@ -117,7 +109,8 @@ const postsSlice = createSlice({
       .addCase(fetchPosts.fulfilled, (state, action) => {
         state.status = 'succeeded'
         // Add any fetched posts to the array
-        state.posts = state.posts.concat(action.payload)
+        // Use the `upsertMany` reducer as a mutating update utility
+        postsAdapter.upsertMany(state, action.payload)
       })
       // when the request fails
       .addCase(fetchPosts.rejected, (state, action) => {
@@ -125,10 +118,8 @@ const postsSlice = createSlice({
         state.error = action.error.message
       })
       // when the post request succeeds
-      .addCase(addNewPost.fulfilled, (state, action) => {
-        // We can directly add the new post object to our posts array
-        state.posts.push(action.payload)
-      })
+      // Use the `addOne` reducer for the fulfilled case
+      .addCase(addNewPost.fulfilled, postsAdapter.addOne)
   },
 })
 // The individual reducer methods are exported deconstructed, while the entire reducer function is exported as default
@@ -139,6 +130,16 @@ export const { postAdded, postUpdated, reactionAdded, extraReducers } =
   postsSlice.actions
 //exporting slice to apply to store
 export default postsSlice.reducer
-// We need the code below to change postSlice as an array of posts to
-//an object with the posts array nested inside
-//the state parameter is the root Redux state object
+// Export the customized selectors for this adapter using `getSelectors`
+export const {
+  selectAll: selectAllPosts,
+  selectById: selectPostById,
+  selectIds: selectPostIds,
+  // Pass in a selector that returns the posts slice of state
+} = postsAdapter.getSelectors((state) => state.posts)
+
+//if there are more than one selectors, put it inside of an array. selectAllPosts is the first input selector function, defined above, it gives us posts. the second one we need is just the userId, but to format it as a selector function we need to input state and userId just to return userId. Given these, now we can execute the output selector function that filters all posts by userId.
+export const selectPostsByUser = createSelector(
+  [selectAllPosts, (state, userId) => userId],
+  (posts, userId) => posts.filter((post) => post.user === userId)
+)
