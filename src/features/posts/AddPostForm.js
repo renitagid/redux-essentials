@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { selectAllUsers } from '../users/usersSlice'
 import { addNewPost } from './postsSlice'
 
 // Question: is this essentially the same as just writing const AddPostForm and then export default AddPostForm at the bottom?
@@ -13,7 +14,7 @@ export const AddPostForm = () => {
   const dispatch = useDispatch()
 
   //   The useSelector hook is used to get the current state from the store - here we are getting specifically the state of users and setting it as the variable users.
-  const users = useSelector((state) => state.users)
+  const users = useSelector(selectAllUsers)
 
   const onTitleChanged = (e) => setTitle(e.target.value)
   const onContentChanged = (e) => setContent(e.target.value)
