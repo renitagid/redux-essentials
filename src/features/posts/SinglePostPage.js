@@ -1,30 +1,26 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
+import { Spinner } from '../../components/Spinner'
+import { useGetPostQuery } from '../api/apiSlice'
 
 import { PostAuthor } from './PostAuthor'
 import { TimeAgo } from './TimeAgo'
 import { ReactionButtons } from './ReactionButtons'
-import { selectPostById } from './postsSlice'
 
 // React Router will pass in a match object as a prop that contains the URL information we're looking for (sent when we set up the route in App.js)
 export const SinglePostPage = ({ match }) => {
   const { postId } = match.params
 
-  //The useSelector hook accesses global state from the store, specifically the posts, then finds one where the params match the post id
-  //The logic is coming from selectPostById which is in postSlice.js
-  const post = useSelector((state) => selectPostById(state, postId))
-
-  if (!post) {
-    return (
-      <section>
-        <h2>Post not found!</h2>
-      </section>
-    )
-  }
-
-  return (
-    <section>
+  const { data: post, isFetching, isSuccess } = useGetPostQuery(postId)
+ 
+  let content
+  if (isFetching) {
+    content = <Spinner text="Loading..." />
+    console.log(isFetching)
+  } else if (isSuccess) {
+    console.log(isSuccess)
+    content = (
       <article className="post">
         <h2>{post.title}</h2>
         <div>
@@ -37,6 +33,20 @@ export const SinglePostPage = ({ match }) => {
           Edit Post
         </Link>
       </article>
+    )
+  }
+
+  // if (!post) {
+  //   return (
+  //     <section>
+  //       <h2>Post not found!</h2>
+  //     </section>
+  //   )
+  // }
+
+  return (
+    <section>
+      {content}
     </section>
   )
 }

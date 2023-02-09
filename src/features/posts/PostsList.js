@@ -1,19 +1,13 @@
-import React, { useEffect } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Spinner } from '../../components/Spinner'
 import { PostAuthor } from './PostAuthor'
 import { TimeAgo } from './TimeAgo'
 import { ReactionButtons } from './ReactionButtons'
-import {
-    fetchPosts,
-    selectPostIds,
-    selectPostById
-  } from './postsSlice'
+import { useGetPostsQuery } from '../api/apiSlice'
 
 //
-let PostExcerpt = ({ postId }) => {
-    const post = useSelector(state => selectPostById(state, postId))
+let PostExcerpt = ({ post }) => {
   return (
     <article className="post-excerpt">
       <h3>{post.title}</h3>
@@ -31,31 +25,36 @@ let PostExcerpt = ({ postId }) => {
   )
 }
 
+// PostsList is using apiSlice for query hooks to return a result object
 export const PostsList = () => {
-  const dispatch = useDispatch()
-  const orderedPostIds = useSelector(selectPostIds)
-  const error = useSelector((state) => state.posts.error)
-  // postStatus is using the useSelector to access the state of posts for the status of the fetch request
-  const postStatus = useSelector((state) => state.posts.status)
-  // useEffect is a hook that is going to run on the first render, if that status is idle, then it will fetchPosts.
-  useEffect(() => {
-    if (postStatus === 'idle') {
-      dispatch(fetchPosts())
-    }
-    // Run the useEffect again when postStatus changes
-  }, [postStatus, dispatch])
+  const {
+    // data is the actual response from the server
+    data: posts = [],
+    // isLoading is a boolean indicating if the hook is making the first request to the server
+    isLoading,
+    // isSuccess is a boolean if the hook has made a successful request and has cached data available
+    isSuccess,
+    // isError is a boolean indicating if the last request had an error
+    isError,
+    // error is a serialized object
+    error
+  } = useGetPostsQuery()
+
+  const sortedPosts = useMemo(() => {
+    const sortedPosts = posts.slice()
+    // Sort posts in descending chronological order
+    sortedPosts.sort((a, b) => b.date.localeCompare(a.date))
+    return sortedPosts
+  }, [posts])
 
   let content
 
-  if (postStatus === 'loading') {
+  if (isLoading) {
     content = <Spinner text="Loading..." />
-  } else if (postStatus === 'succeeded') {
-    // Sort posts in reverse chronological order by datetime string
-    content = orderedPostIds.map(postId => (
-        <PostExcerpt key={postId} postId={postId} />
-      ))
-  } else if (postStatus === 'failed') {
-    content = <div>{error}</div>
+  } else if (isSuccess) {
+    content = sortedPosts.map(post => <PostExcerpt key={post.id} post={post} />)
+  } else if (isError) {
+    content = <div>{error.toString()}</div>
   }
 
   return (
